@@ -63,9 +63,11 @@ public final class Robot extends ExtendedIterativeRobot {
 	@Override
 	public void teleopStart() {
 		try {
+			// used to be 512x384@8fps
 			final UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(512, 384);
-			camera.setFPS(8);
+			camera.setResolution(173, 128);
+			camera.setFPS(24);
+
 			System.out.println("Camera feed supplied to CameraServer");
 		} catch (final Exception ex) {
 			System.out.println("CAMERA ERROR");

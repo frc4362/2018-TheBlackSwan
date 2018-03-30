@@ -9,12 +9,12 @@ import static java.lang.Math.abs;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class TurnDegrees extends Command {
-	private static final float END_THRESHOLD_DEGREES = 1;
+	private static final float END_THRESHOLD_DEGREES = 1f;
 
 	private static final long DEFAULT_DURATION = 100_000;
 
 	private static final double
-			DRIVE_SPEED = -0.5,
+			DRIVE_SPEED = -0.6,
 			MINIMUM_SPEED_RATIO = 0.25,
 			MINIMUM_SPEED = DRIVE_SPEED * MINIMUM_SPEED_RATIO;
 

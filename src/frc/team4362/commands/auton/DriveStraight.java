@@ -7,18 +7,35 @@ import frc.team4362.hardwares.Hardware;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 
+@SuppressWarnings("WeakerAccess")
 public final class DriveStraight extends DriveDistanceRamp {
 	private final static double MAXIMUM_TOLERANCE = 22.5;
 
 	private final double m_speed;
 	private final AHRS m_ahrs;
 
+	private final boolean m_doRamping;
+
 	private double m_startingHeading;
 
-	public DriveStraight(final double distance, final double speed, final long duration) {
+	private static final double
+		RAMP_DOWN_DISTANCE = 0.35,
+		MINIMUM_SPEED = 0.3;
+
+	public DriveStraight(
+			final double distance,
+			final double speed,
+			final long duration,
+			final boolean doRamping
+	) {
 		super(distance, speed, duration);
 		m_ahrs = Hardware.getInstance().getMXP();
 		m_speed = speed;
+		m_doRamping = doRamping;
+	}
+
+	public DriveStraight(final double distance, final double speed, final long duration) {
+		this(distance, speed, duration, false);
 	}
 
 	@Override
@@ -64,9 +81,23 @@ public final class DriveStraight extends DriveDistanceRamp {
 		SmartDashboard.putNumber("adjusted left speed", l);
 		SmartDashboard.putNumber("adjusted right speed", r);
 
+
+		double speed;
+
+		if (!m_doRamping || super.getLeftError() > (RAMP_DOWN_DISTANCE * m_distance)) {
+			speed = abs(m_speed);
+		} else {
+			final double ratio = super.getLeftError() / (RAMP_DOWN_DISTANCE * m_distance);
+			speed = abs(ratio * m_speed);
+
+			if (speed < MINIMUM_SPEED) {
+				speed = MINIMUM_SPEED;
+			}
+		}
+
 		Hardware.getInstance().getDriveTrain().drive(
-				l * abs(m_speed),
-				r * abs(m_speed)
+				l * speed,
+				r * speed
 		);
 	}
 }

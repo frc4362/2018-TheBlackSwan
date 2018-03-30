@@ -7,7 +7,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class IntakeWheelSet {
 	public enum SpeedPreset {
 		NEUTRAL(0.0f),
-		INTAKING(0.5f),
+		INTAKING(0.8f), // used to be 0.5f
+		SLOWLY_OUTTAKING(-0.25f),
 		OUTTAKING(-0.5f);
 
 		private final float speed;

@@ -36,6 +36,7 @@ public class OperatorInterface {
 
 				intakeButton = new Gembutton(controller, 1),
 				outtakeButton = new Gembutton(controller, 4),
+				otherOuttakeButton = new Gembutton(controller, 5),
 				openMouthButton = new Gembutton(controller, 9),
 
 				climbExtendButton = new Gembutton(controller, 8),
@@ -56,6 +57,10 @@ public class OperatorInterface {
 			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.OUTTAKING));
 		outtakeButton.whenReleased(() ->
 		    Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.NEUTRAL));
+		otherOuttakeButton.whenPressed(() ->
+			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.SLOWLY_OUTTAKING));
+		otherOuttakeButton.whenPressed(() ->
+			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.NEUTRAL));
 
 		openMouthButton.whenPressed(() ->
 			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward));
