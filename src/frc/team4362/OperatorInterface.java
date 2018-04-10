@@ -1,6 +1,8 @@
 package frc.team4362;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.team4362.commands.ClimbExtend;
 import frc.team4362.commands.ClimbRetract;
@@ -36,13 +38,14 @@ public class OperatorInterface {
 
 				intakeButton = new Gembutton(controller, 1),
 				outtakeButton = new Gembutton(controller, 4),
-				otherOuttakeButton = new Gembutton(controller, 5),
 				openMouthButton = new Gembutton(controller, 9),
 
 				climbExtendButton = new Gembutton(controller, 8),
 				climbRetractButton = new Gembutton(controller, 7),
 
-				mouthForcerButton = new Gembutton(controller, 10);
+				mouthForcerButton = new Gembutton(controller, 10),
+				lightButton = new Gembutton(controller,5),
+				pinchButton = new Gembutton(controller, 6);
 
 		shiftUpButton.whenPressed(() ->
 		  	Hardware.getInstance().getShifter().set(DoubleSolenoid.Value.kForward));
@@ -57,10 +60,6 @@ public class OperatorInterface {
 			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.OUTTAKING));
 		outtakeButton.whenReleased(() ->
 		    Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.NEUTRAL));
-		otherOuttakeButton.whenPressed(() ->
-			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.SLOWLY_OUTTAKING));
-		otherOuttakeButton.whenPressed(() ->
-			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.NEUTRAL));
 
 		openMouthButton.whenPressed(() ->
 			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward));
@@ -73,7 +72,12 @@ public class OperatorInterface {
 		});
 		mouthForcerButton.whenReleased(mouthListener::enable);
 
-		climbExtendButton.whenPressed(new ClimbExtend());
-		climbRetractButton.whenPressed(new ClimbRetract());
+		lightButton.whenPressed(Hardware.getInstance().getLEDs()::turnOn);
+		lightButton.whenReleased(Hardware.getInstance().getLEDs()::turnOff);
+
+		pinchButton.whenPressed(() ->
+			Hardware.getInstance().getPincher().set(true));
+		pinchButton.whenPressed(() ->
+			Hardware.getInstance().getPincher().set(false));
 	}
 }

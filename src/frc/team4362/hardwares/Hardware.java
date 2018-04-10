@@ -1,5 +1,6 @@
 package frc.team4362.hardwares;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
 import frc.team4362.Config;
@@ -16,13 +17,15 @@ public class Hardware {
 	private final DriveBase m_driveTrain;
 	private final AHRS m_gyro;
 	private final DoubleSolenoid m_shifter;
-	private final Climber m_climber;
+	private final Solenoid m_pincher;
+	private final WPI_TalonSRX m_climber;
 	private final Intakes m_intakes;
 	private final Lift m_lift;
+	private final LEDs m_lights;
 
 	protected Hardware() {
 		m_lift = new Lift(43, 44); // used to be 43/44
-		m_climber = new Climber(41);
+		m_climber = new WPI_TalonSRX(41);
 		m_intakes = new Intakes(
 				new DoubleSolenoid(6, 7),
 				new IntakeWheelSet(21, 22),
@@ -32,6 +35,8 @@ public class Hardware {
 
 		m_gyro = new MyAHRS(SPI.Port.kMXP);
 		m_shifter = new DoubleSolenoid(0, 1);
+		m_pincher = new Solenoid(2);
+		m_lights = new LEDs(0);
 	}
 
 	public static Hardware getInstance() {
@@ -66,7 +71,15 @@ public class Hardware {
 		return m_lift;
 	}
 
-	public Climber getClimber() {
+	public WPI_TalonSRX getClimber() {
 		return m_climber;
+	}
+
+	public LEDs getLEDs() {
+		return m_lights;
+	}
+
+	public Solenoid getPincher() {
+		return m_pincher;
 	}
 }

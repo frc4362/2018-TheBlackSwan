@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.team4362.hardwares.Hardware;
 import frc.team4362.subsystems.Climber;
 
+@Deprecated
+@SuppressWarnings("unused")
 public class ClimbRetract extends Command {
 	private boolean m_isFinished;
 

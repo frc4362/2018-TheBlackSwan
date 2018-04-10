@@ -2,6 +2,7 @@ package frc.team4362.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+@Deprecated
 public final class Climber {
 	public static final double
 		STOP_THRESHOLD = 28500,

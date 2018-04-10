@@ -22,7 +22,7 @@ public final class LiftControllerListener extends Command {
 
 	@Override
 	public void execute() {
-		double adjustmentRatio =
+		final double adjustmentRatio =
 				m_controller.getTriggerAxis(kRight) - m_controller.getTriggerAxis(kLeft);
 
 		if (Math.abs(adjustmentRatio) > 0.3) {

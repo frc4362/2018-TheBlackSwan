@@ -12,7 +12,6 @@ import frc.team4362.commands.*;
 import frc.team4362.commands.log.LogAHRSHeading;
 import frc.team4362.commands.log.LogEncoders;
 import frc.team4362.commands.log.LogLiftPositions;
-import frc.team4362.hardwares.CameraHardware;
 import frc.team4362.hardwares.Hardware;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -22,6 +21,7 @@ import frc.team4362.util.joy.DPadListener;
 
 /**
  * It's so minimal and I l o v e it
+ * EDIT 4/7: F
  *
  * https://i.redd.it/mf55wyr77icy.png
  *
@@ -108,7 +108,8 @@ public final class Robot extends ExtendedIterativeRobot {
 					put(DPadListener.Direction.WEST,
 							new LiftPositionChange(Lift.Position.NEW_SCALE, 0));
 				}}),
-				m_mouthListener
+				m_mouthListener,
+				new ClimbListener(m_rightStick)
 		);
 	}
 
@@ -117,8 +118,6 @@ public final class Robot extends ExtendedIterativeRobot {
 		stopLiftFromKillingItself();
 		Scheduler.getInstance().run();
 		Hardware.getInstance().getDriveTrain().setPIDEnabled(false);
-		SmartDashboard.putNumber("climber pos",
-				Hardware.getInstance().getClimber().getTalon().getSelectedSensorPosition(0));
 	}
 
 	@Override

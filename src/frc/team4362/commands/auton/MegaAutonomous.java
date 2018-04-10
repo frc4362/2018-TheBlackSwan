@@ -13,15 +13,27 @@ import static frc.team4362.util.command.Commands.commandOf;
 @SuppressWarnings("WeakerAccess")
 public class MegaAutonomous extends PowerUpCommandGroup {
 	public enum Side {
-		LEFT(1, 'L'),
-		RIGHT(-1, 'R');
+		LEFT(1, 'L', 0.0, 0.0, 0.0),
+		RIGHT(-1, 'R', 12.0, 3.0, 10.0);
 
 		public final int multiplier;
 		public final char character;
+		public final double xtraInches;
+		public final double xtraFirstDegrees;
+		public final double xtraSecondDegrees;
 
-		Side(final int m, final char ch) {
+		Side(
+				final int m,
+				final char ch,
+				final double xInches,
+				final double xFirstDegrees,
+				final double xSecondDegrees
+		) {
 			multiplier = m;
 			character = ch;
+			xtraInches = xInches;
+			xtraFirstDegrees = xFirstDegrees;
+			xtraSecondDegrees = xSecondDegrees;
 		}
 	}
 
@@ -81,7 +93,7 @@ public class MegaAutonomous extends PowerUpCommandGroup {
 
 	protected void closeScaleFromStart() {
 		addSequential(Navigate.to(0, 186, 0, 0.9, 10000));
-		addSequential(Navigate.to(0, 70, 0, 0.8, 10000));
+		addSequential(Navigate.to(0, 70 + m_side.xtraInches, 0, 0.8, 10000));
 		addSequential(commandOf(() ->
 			Hardware.getInstance().getDriveTrain().drive(0, 0)));
 		addSequential(new LiftPositionChange(Lift.Position.TOP, 500));
@@ -97,7 +109,7 @@ public class MegaAutonomous extends PowerUpCommandGroup {
 		addSequential(new LiftPositionChange(Lift.Position.TOP, 0));
 		addSequential(Navigate.to(0, 0, -104 * m_side.multiplier, 3, 4000));
 		addSequential(Navigate.to(0, 18, 0, 0.7, 3000));
-		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING), 0.25);
+		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING), 0.75);
 		addSequential(new LiftPositionChange(Lift.Position.BOTTOM, 1000));
 		addSequential(Navigate.to(0, 0, -139 * m_side.multiplier, 0, 4000));
 		addParallel(new RunIntakes(IntakeWheelSet.SpeedPreset.INTAKING, 1500));
@@ -113,7 +125,8 @@ public class MegaAutonomous extends PowerUpCommandGroup {
 	}
 
 	protected void pickUpSecondCube() {
-		addSequential(new TurnToAngle(152 * m_side.multiplier, 3000));
+		addSequential(
+			new TurnToAngle((152 + m_side.xtraFirstDegrees) * m_side.multiplier, 3000));
 
 		addSequential(Navigate.to(0, 70, 0, 0.7, 4500));
 
@@ -124,20 +137,22 @@ public class MegaAutonomous extends PowerUpCommandGroup {
 	protected void putSecondCubeInScale() {
 		addSequential(Navigate.to(0, -24, 0, -0.6, 2000));
 		addSequential(new LiftPositionChange(Lift.Position.TOP, 0));
-		addSequential(Navigate.to(0, 0, -120 * m_side.multiplier, 0, 3000));
+		addSequential(
+			Navigate.to(0, 0,
+				(-120 - m_side.xtraSecondDegrees) * m_side.multiplier, 0, 3000));
 		addSequential(Navigate.to(0, 28, 0, 0.25, 2000));
 		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING), 0.75);
 	}
 
 	protected void putSecondCubeInSwitch() {
-		addSequential(new LiftPositionChange(Lift.Position.CARRY_PLUS, 2000));
-		addSequential(Navigate.to(0, 18, 0, 0.5, 3000));
-		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING, 500));
+		addSequential(new LiftPositionChange(Lift.Position.CARRY_PLUS, 1000));
+		addSequential(Navigate.to(0, 24, 0, 0.7, 2000));
+		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING, 1000));
 	}
 
 	protected void doHalfCross() {
 		addSequential(Navigate.to(0, 188, 0, 0.9, 10000));
 		addSequential(Navigate.to(0, 0, 90, 1, 4000));
-		addSequential(Navigate.to(0, 50, 0, 0.7, 3000));
+		addSequential(Navigate.to(0, 50, 0, 0.7, 5000));
 	}
 }
