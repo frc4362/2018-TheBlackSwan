@@ -1,5 +1,7 @@
 package frc.team4362.commands.auton;
 
+import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.team4362.commands.LiftPositionChange;
 import frc.team4362.commands.RunIntakes;
 import frc.team4362.commands.any.Wait;
 import frc.team4362.hardwares.Hardware;
@@ -28,9 +30,20 @@ public class CorrectSwitchSideAuton extends PowerUpCommandGroup {
 		}
 
 		addSequential(new Wait(500));
-		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING), 0.75);
-		addSequential(Navigate.to(0, -30, 0, -0.3, 5000));
-//
+		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING_BUT_FAST), 1.5);
+
+		addSequential(Navigate.to(0, -48, 0, -0.3, 5000));
+		addSequential(new LiftPositionChange(Lift.Position.BOTTOM, 0));
+		addSequential(Navigate.to(0, 0,
+				44.5 * (getOurSwitchSide() == 'L' ? 1 : -1), 1, 4000));
+		addSequential(Navigate.to(0, 24, 0, 0.6, 4000));
+		addSequential(new CommandGroup() {
+			{
+				addParallel(new RunIntakes(IntakeWheelSet.SpeedPreset.INTAKING, 4000));
+				addParallel(Navigate.to(0, 20, 0, 0.4, 1500));
+			}
+		});
+
 //		addSequential(commandOf(() ->
 //			Hardware.getInstance().getLift().setLiftPreset(Lift.Position.BOTTOM)));
 //		addSequential(commandOf(() ->

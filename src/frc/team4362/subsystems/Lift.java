@@ -17,14 +17,14 @@ public final class Lift {
 	private double m_setpoint;
 
 	public enum Position {
-		TOP(0.98),
+		TOP(1.0),
 		SCALE(0.9),
 		NEW_SCALE(0.6746987951807228),
 		CARRY_PLUS(0.293),
 		CARRY(0.233), // used to be .39
 		STARTING(0.233),
 		CLOSE_THRESHOLD(0.2),
-		BOTTOM(0.0); // 18 / 83
+		BOTTOM(-0.006024096385542169);
 
 		public final double positionTicks;
 
@@ -34,17 +34,14 @@ public final class Lift {
 	}
 
 	private static final double
-		kP = 0.235, // 0.26 ??
+		kP = 0.235,
 		kI = 0.0002,
 		kD = 0.0,
 		kF = 0.01;
 
 	private static final int ALLOWED_ERROR = 400;
 
-	private static final double
-		LIFT_HEIGHT_ROTATIONS = 0,
-		TICKS_PER_ROTATION = 0,
-		LIFT_HEIGHT_TICKS = 30100; // nominally 38700
+	private static final double LIFT_HEIGHT_TICKS = 30100;
 
 	public static final double CYCLE_LENGTH = LIFT_HEIGHT_TICKS;
 
@@ -52,7 +49,7 @@ public final class Lift {
 
 	private static void configureTalon(final WPI_TalonSRX device) {
 		device.configPeakOutputForward(1, 0);
-		device.configPeakOutputReverse(-0.7, 0);
+		device.configPeakOutputReverse(-0.8, 0);
 
 		device.config_kP(0, kP, 0);
 		device.config_kI(0, kI, 0);

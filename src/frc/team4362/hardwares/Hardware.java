@@ -18,14 +18,15 @@ public class Hardware {
 	private final AHRS m_gyro;
 	private final DoubleSolenoid m_shifter;
 	private final Solenoid m_pincher;
-	private final WPI_TalonSRX m_climber;
+	private final WPI_TalonSRX m_climber1, m_climber2;
 	private final Intakes m_intakes;
 	private final Lift m_lift;
 	private final LEDs m_lights;
 
 	protected Hardware() {
 		m_lift = new Lift(43, 44); // used to be 43/44
-		m_climber = new WPI_TalonSRX(41);
+		m_climber1 = new WPI_TalonSRX(41);
+		m_climber2 = new WPI_TalonSRX(42);
 		m_intakes = new Intakes(
 				new DoubleSolenoid(6, 7),
 				new IntakeWheelSet(21, 22),
@@ -71,8 +72,12 @@ public class Hardware {
 		return m_lift;
 	}
 
-	public WPI_TalonSRX getClimber() {
-		return m_climber;
+	public WPI_TalonSRX getClimber1() {
+		return m_climber1;
+	}
+
+	public WPI_TalonSRX getClimber2() {
+		return m_climber2;
 	}
 
 	public LEDs getLEDs() {

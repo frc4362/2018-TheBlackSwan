@@ -84,10 +84,10 @@ public final class DriveStraight extends DriveDistanceRamp {
 
 		double speed;
 
-		if (!m_doRamping || super.getLeftError() > (RAMP_DOWN_DISTANCE * m_distance)) {
+		if (!m_doRamping || super.getRightError() > (RAMP_DOWN_DISTANCE * m_distance)) {
 			speed = abs(m_speed);
 		} else {
-			final double ratio = super.getLeftError() / (RAMP_DOWN_DISTANCE * m_distance);
+			final double ratio = super.getRightError() / (RAMP_DOWN_DISTANCE * m_distance);
 			speed = abs(ratio * m_speed);
 
 			if (speed < MINIMUM_SPEED) {

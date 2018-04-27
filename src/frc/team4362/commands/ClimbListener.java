@@ -1,23 +1,29 @@
 package frc.team4362.commands;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.team4362.hardwares.Hardware;
-import frc.team4362.util.joy.Gemstick;
 
 public final class ClimbListener extends Command {
-	private final Gemstick m_climbStick;
+	private final XboxController m_controller;
 
-	public ClimbListener(final Gemstick climbStick) {
-		m_climbStick = climbStick;
+	public ClimbListener(final XboxController controller) {
+		m_controller = controller;
 	}
 
 	@Override
 	public void execute() {
-		final double climbSpeed = (-m_climbStick.getThrottle() + 1) / 2;
+		double climbSpeed = Math.abs(m_controller.getY(GenericHID.Hand.kRight));
 
-		Hardware.getInstance().getClimber()
+		if (!m_controller.getRawButton(7)) {
+			climbSpeed = 0.0;
+		}
+
+		Hardware.getInstance().getClimber1()
+				.set(ControlMode.PercentOutput, -climbSpeed);
+		Hardware.getInstance().getClimber2()
 				.set(ControlMode.PercentOutput, climbSpeed);
 	}
 

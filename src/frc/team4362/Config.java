@@ -6,5 +6,5 @@ public class Config {
 
 	public static boolean
 		USE_CAMERA = false,
-		USE_CLIMBER = false;
+		USE_CLIMBER = true;
 }

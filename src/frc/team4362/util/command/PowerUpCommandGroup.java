@@ -18,11 +18,11 @@ public abstract class PowerUpCommandGroup extends CommandGroup {
 		Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward);
 	}
 
-	protected final char getOurSwitchSide() {
+	protected char getOurSwitchSide() {
 		return DriverStation.getInstance().getGameSpecificMessage().charAt(0);
 	}
 
-	protected final char getOurScaleSide() {
+	protected char getOurScaleSide() {
 		return DriverStation.getInstance().getGameSpecificMessage().charAt(1);
 	}
 

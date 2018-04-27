@@ -8,8 +8,9 @@ public class IntakeWheelSet {
 	public enum SpeedPreset {
 		NEUTRAL(0.0f),
 		INTAKING(0.8f), // used to be 0.5f
-		SLOWLY_OUTTAKING(-0.25f),
-		OUTTAKING(-0.5f);
+		SLOWLY_OUTTAKING(-0.38f),
+		OUTTAKING(-0.5f),
+		OUTTAKING_BUT_FAST(-0.6666667f);
 
 		private final float speed;
 

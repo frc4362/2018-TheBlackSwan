@@ -109,7 +109,7 @@ public final class Robot extends ExtendedIterativeRobot {
 							new LiftPositionChange(Lift.Position.NEW_SCALE, 0));
 				}}),
 				m_mouthListener,
-				new ClimbListener(m_rightStick)
+				new ClimbListener(m_controller)
 		);
 	}
 

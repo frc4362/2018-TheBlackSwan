@@ -16,6 +16,8 @@ public class AutonSelector extends SendableChooser<Command> {
 
 		addObject("Smart Switch Auton",
 				new CorrectSwitchSideAuton());
+		addObject("New Enginerds Auton",
+				new EnginerdsAuton());
 
 		addObject("Left Mega Auton (SCALE Priority)",
 				new MegaAutonomous(MegaAutonomous.Side.LEFT, false, true));
@@ -44,6 +46,38 @@ public class AutonSelector extends SendableChooser<Command> {
 				new ScaleOrNothingAuton(MegaAutonomous.Side.LEFT));
 		addObject("Right Close Scale or Nothing Auton",
 				new ScaleOrNothingAuton(MegaAutonomous.Side.RIGHT));
+
+		addObject("Force Left Two Cube",
+				new LiesMegaAuton(MegaAutonomous.Side.LEFT, false, false,
+						true, false));
+		addObject("Force Right Two Cube",
+				new LiesMegaAuton(MegaAutonomous.Side.RIGHT, false, false,
+						true, false));
+		addObject("Force Left Cross 1.5 Cube",
+				new LiesMegaAuton(MegaAutonomous.Side.LEFT, false, true,
+						false, false));
+		addObject("Force Right Cross 1.5 Cube",
+				new LiesMegaAuton(MegaAutonomous.Side.RIGHT, false, true,
+						false, false));
+		addObject("Force Left Side Scale/Switch",
+				new LiesMegaAuton(MegaAutonomous.Side.LEFT, true, false,
+						true, true));
+		addObject("Force Right Side Scale/Switch",
+			new LiesMegaAuton(MegaAutonomous.Side.LEFT, true, false,
+					true, true));
+
+		addObject("Field Check Auton",
+			new LiesMegaAuton(MegaAutonomous.Side.FIELDCHECK, false, false,
+					true, false));
+
+		addObject("2-Cube Compatible Left (SCALE Priority)",
+				new CompatibleMegaAuton(MegaAutonomous.Side.LEFT, false));
+		addObject("2-Cube Compatible Right (SCALE Priority)",
+				new CompatibleMegaAuton(MegaAutonomous.Side.RIGHT, false));
+		addObject("2-Cube Compatible Left (SWITCH Priority)",
+				new CompatibleMegaAuton(MegaAutonomous.Side.LEFT, true));
+		addObject("2-Cube Compatible Right (SWITCH Priority)",
+				new CompatibleMegaAuton(MegaAutonomous.Side.RIGHT, true));
 
 		// we really don't need this, but I won't let this joke go away just yet
 //		addObject("Mike Pence drive", new DriveStraight(-120, -0.5));

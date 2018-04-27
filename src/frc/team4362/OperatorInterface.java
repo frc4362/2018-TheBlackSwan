@@ -1,14 +1,10 @@
 package frc.team4362;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.team4362.commands.ClimbExtend;
-import frc.team4362.commands.ClimbRetract;
 import frc.team4362.commands.MouthListener;
 import frc.team4362.hardwares.Hardware;
-import frc.team4362.subsystems.Lift;
 import frc.team4362.util.IntakeWheelSet;
 import frc.team4362.util.joy.Gembutton;
 import frc.team4362.util.joy.Gemstick;
@@ -38,7 +34,7 @@ public class OperatorInterface {
 
 				intakeButton = new Gembutton(controller, 1),
 				outtakeButton = new Gembutton(controller, 4),
-				openMouthButton = new Gembutton(controller, 9),
+//				openMouthButton = new Gembutton(controller, 9),
 
 				climbExtendButton = new Gembutton(controller, 8),
 				climbRetractButton = new Gembutton(controller, 7),
@@ -56,15 +52,21 @@ public class OperatorInterface {
 			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.INTAKING));
 		intakeButton.whenReleased(() ->
 			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.NEUTRAL));
-		outtakeButton.whenPressed(() ->
-			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.OUTTAKING));
-		outtakeButton.whenReleased(() ->
-		    Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.NEUTRAL));
 
-		openMouthButton.whenPressed(() ->
-			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward));
-		openMouthButton.whenReleased(() ->
-			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kReverse));
+		outtakeButton.whileHeldIfElse(
+				() -> controller.getStickButton(GenericHID.Hand.kLeft),
+				() -> Hardware.getInstance().getIntakes()
+							  .set(IntakeWheelSet.SpeedPreset.OUTTAKING_BUT_FAST),
+				() -> Hardware.getInstance().getIntakes()
+							  .set(IntakeWheelSet.SpeedPreset.OUTTAKING));
+		outtakeButton.whenReleased(
+				() -> Hardware.getInstance().getIntakes()
+							  .set(IntakeWheelSet.SpeedPreset.NEUTRAL));
+
+//		openMouthButton.whenPressed(() ->
+//			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward));
+//		openMouthButton.whenReleased(() ->
+//			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kReverse));
 
 		mouthForcerButton.whenPressed(() -> {
 			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward);
@@ -77,7 +79,7 @@ public class OperatorInterface {
 
 		pinchButton.whenPressed(() ->
 			Hardware.getInstance().getPincher().set(true));
-		pinchButton.whenPressed(() ->
+		pinchButton.whenReleased(() ->
 			Hardware.getInstance().getPincher().set(false));
 	}
 }
