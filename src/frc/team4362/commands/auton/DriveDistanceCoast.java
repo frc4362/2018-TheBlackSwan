@@ -5,8 +5,8 @@ import java.util.List;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import frc.team4362.Constants;
-import frc.team4362.hardwares.Hardware;
-import frc.team4362.subsystems.DriveBase;
+import frc.team4362.Hardware;
+import frc.team4362.subsystems.DifferentialDrive;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,7 +18,7 @@ public class DriveDistanceCoast extends Command {
 	protected static final double THRESHOLD = Constants.COUNTS_PER_INCH * 1.5;
 
 	protected final WPI_TalonSRX m_talonLeft, m_talonRight;
-	protected final DriveBase m_driveTrain;
+	protected final DifferentialDrive m_driveTrain;
 	protected final double m_distance, m_speedLeft, m_speedRight;
 	protected final long m_duration;
 	protected long m_endTime;
@@ -62,7 +62,7 @@ public class DriveDistanceCoast extends Command {
     	SmartDashboard.putNumber("left error", getLeftError());
     	SmartDashboard.putNumber("right error", getRightError());
 
-    	m_driveTrain.driveAuton(
+    	m_driveTrain.drive(
     			m_speedLeft * signum(getLeftError()) * signum(m_speedLeft),
     			m_speedRight * signum(getRightError()) * signum(m_speedRight)
     	);

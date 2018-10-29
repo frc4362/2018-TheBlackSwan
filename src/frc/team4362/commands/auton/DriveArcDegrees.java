@@ -1,7 +1,7 @@
 package frc.team4362.commands.auton;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.Hardware;
 
 @SuppressWarnings("WeakerAccess")
 public class DriveArcDegrees extends DriveCircleDuration {
@@ -69,7 +69,7 @@ public class DriveArcDegrees extends DriveCircleDuration {
 			right = 0;
 		}
 
-		Hardware.getInstance().getDriveTrain().driveAuton(
+		Hardware.getInstance().getDriveTrain().drive(
 				left * multiplier,
 				right * multiplier
 		);

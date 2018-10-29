@@ -2,16 +2,13 @@ package frc.team4362.util.command;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.Hardware;
 
-import java.sql.Driver;
-
-import static frc.team4362.util.command.Commands.commandOf;
-
+/**
+ * A game-specific implementation of {@link RuntimeCommandGroup} for FRC2018 Power-Up
+ */
 @SuppressWarnings("WeakerAccess")
-public abstract class PowerUpCommandGroup extends CommandGroup {
+public abstract class PowerUpCommandGroup extends RuntimeCommandGroup {
 	@Override
 	public final void initialize() {
 		// there used to be more here
@@ -25,6 +22,4 @@ public abstract class PowerUpCommandGroup extends CommandGroup {
 	protected char getOurScaleSide() {
 		return DriverStation.getInstance().getGameSpecificMessage().charAt(1);
 	}
-
-	public abstract void init();
 }

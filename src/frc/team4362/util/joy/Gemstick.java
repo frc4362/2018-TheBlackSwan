@@ -6,12 +6,25 @@ import frc.team4362.util.func.FunctionPipeline;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+/**
+ * Over-engineered {@link Joystick} extension which has a LOT of behavior
+ * Allows for POV controls, layered, sophisticated deadbanding on every axis,
+ * and doesn't update values unless it needs to do so
+ *
+ * @author Ethan Malzone
+ */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class Gemstick extends Joystick {
 	private static int instances = 0;
-	
-	private static final int FRAME_LENGTH = 50;
 
+	// frame length in ms, determines the update rate of the joysticks
+	// this might be wrong... uhHh
+	private static final int FRAME_LENGTH_MS = 50;
+
+	/**
+	 * Packages all values provided by the {@link Joystick} buttons in one frame
+	 * so we update and store all values as we need them- not as they're available
+	 */
 	public enum StickLens {
 		X(JoystickFrame::getX), 
 		Y(JoystickFrame::getY), 
@@ -30,6 +43,9 @@ public final class Gemstick extends Joystick {
 		}
 	}
 
+	/**
+	 * Similar to {@link frc.team4362.util.joy.DPadListener.Direction}
+	 */
 	public enum POVState {
 		NONE(-1), 
 		N(0), 
@@ -62,31 +78,48 @@ public final class Gemstick extends Joystick {
 			case 5: return POVState.SW;
 			case 6: return POVState.W;
 			case 7: return POVState.NW;
-			default: 
+			default:
+				// this should never happen
 				throw new RuntimeException("Invalid POVState state!");
 			}
 		}
 	}
 
+	/**
+	 * Provides sophisticated deadbanding utilities and options
+	 * This is doable as it doesn't matter which order you apply these in
+	 */
 	@SuppressWarnings("unused")
-	private static class Funcs {
+	private static class DeadbandingOptions {
 		private static final double TWO_THIRDS = 2.0 / 3.0;
 
 		/**
+		 * Scales a value that's from a given range to 1.0 in either direction,
+		 * instead of from 0-1.00
+		 * ie scale(0.75, 0.5) -> 0.5 motor output
 		 * [1.0 - range, 1.0] -> [0.0, 1.0]
+		 * @param input The number to be scaled
+		 * @param range The amount by which the scale should be adjusted
+		 * @return The appropriately scaled input
 		 */
 		private static double scale(final double input, final double range) {
 			return (1.0 / range) * (input - ((1.0 - range) * Math.signum(input)));
 		}
 
+		// fundamental deadbanding method
 		private static double deadband(final double input, final double threshold) {
 			return Math.abs(input) > threshold ? scale(input, 1 - threshold) : 0;
 		}
 
 		/**
-		 * Simple rectangle deadband
+		 * Deadbands the {@link Gemstick} in a rectangle shape
+		 * @param limitX The width of the rectangle
+		 * @param limitY The height of the rectangle
+		 * @return The modified pipeline which will provide this
 		 */
-		public static Function<JoystickFrame, JoystickFrame> makeRectangleDeadband(final double limitX, final double limitY) {
+		public static Function<JoystickFrame, JoystickFrame> makeRectangleDeadband(
+				final double limitX, final double limitY
+		) {
 			return (stick) -> {
 				final double x = stick.getX(), 
 						     y = stick.getY();
@@ -99,9 +132,18 @@ public final class Gemstick extends Joystick {
 			};
 		}
 
-		// TODO: MAKE WORK
 		/**
-		 * Deadbands the joystick in a circle
+		 * Makes a square-shaped deadband
+		 * @param dim The width and height of the square
+		 * @return The function which will deadband values in a square
+		 * @see DeadbandingOptions#makeRectangleDeadband(double, double)
+		 */
+		public static Function<JoystickFrame, JoystickFrame> makeSquareDeadband(final double dim) {
+			return makeRectangleDeadband(dim, dim);
+		}
+
+		/**
+		 * Deadbands the joystick in a circle based on a given radius around the origin
 		 * @param radius 0-sqrt(2)
 		 */
 		public static Function<JoystickFrame, JoystickFrame> makeRadialDeadband(final double radius) {
@@ -118,11 +160,14 @@ public final class Gemstick extends Joystick {
 		}
 
 		/**
-		 * Deadbands the joystick in the shape of a 2/3 degree superellipse, otherwise known as a squashed astroid
+		 * Deadbands the joystick in the shape of a 2/3 degree superellipse,
+		 * otherwise known as a squashed astroid
 		 * The logic behind this is that 
-		 * 	1. The controller is unlikely to come to a rest offset from the origin in two axis of movement
+		 * 	1. The controller is unlikely to come to a rest offset from the origin
+		 * 		in two axis of movement
 		 *  2. Movement in more than one axis is unlikely to be accidental. 
-		 *  3. Therefore, an astroid deadzone is very efficient as it will protect against slight default position errors,
+		 *  3. Therefore, an astroid deadzone is very efficient as it will protect
+		 *  	against slight default position errors,
 		 *  	and will still allow for quick multiaxial movement.
 		 * @param limit Approximately the total width of the astroid. 
 		 */
@@ -173,6 +218,9 @@ public final class Gemstick extends Joystick {
 			);
 		}
 
+		/**
+		 * Produces a function which inverts the inputs
+		 */
 		public static Function<JoystickFrame, JoystickFrame> makeInverts(
 				final boolean x,
 				final boolean y,
@@ -186,32 +234,56 @@ public final class Gemstick extends Joystick {
 		}
 	}
 
-	protected FunctionPipeline<JoystickFrame> m_pipeline;
-
+	protected final FunctionPipeline<JoystickFrame> m_pipeline;
 	protected final String m_name;
-	
 	private JoystickFrame m_lastFrame;
 
-	public Gemstick(final String name, final int port) {
+	/**
+	 * @return The default function pipeline
+	 */
+	public static FunctionPipeline<JoystickFrame> defaultPipeline() {
+		return new FunctionPipeline<>(
+				DeadbandingOptions.makeInverts(false, true, false),
+				DeadbandingOptions.makeRectangleDeadband(0.12, 0.12),
+				DeadbandingOptions.makeZDeadband(0.08)
+		);
+	}
+
+	/**
+	 * The main constructor for the class, all other ones just provide
+	 * default values for this one
+	 * @param name What to name the stick for logging purposes
+	 * @param port Which port to use for the Joystick
+	 * @param pipeline The functions and filters to apply to the {@link JoystickFrame}s
+	 */
+	public Gemstick(
+			final String name,
+			final int port,
+			final FunctionPipeline<JoystickFrame> pipeline
+	) {
 		super(port);
 
 		m_name = name;
-
-		m_pipeline = new FunctionPipeline<>(
-				Funcs.makeInverts(false, true, false),
-				Funcs.makeRectangleDeadband(0.12, 0.12),
-				Funcs.makeZDeadband(0.08)
-		);
-
+		m_pipeline = pipeline;
 		m_lastFrame = new JoystickFrame(this);
 
 		instances++;
 	}
 
+	// easy constructor
+	public Gemstick(final String name, final int port) {
+		this(name, port, defaultPipeline());
+	}
+
+	// super easy constructor
 	public Gemstick(final int port) {
 		this("Jostick " + String.format("%02d", instances), port);
 	}
 
+	/**
+	 * Gets the POV value of {@link Joystick} but makes it a usable value
+	 * @return The POV state with a non-360 degree value3
+	 */
 	public POVState getPOVState() {
 		final int s = super.getPOV();
 		
@@ -230,10 +302,16 @@ public final class Gemstick extends Joystick {
 		return m_name;
 	}
 
+	/**
+	 * @return Efficient data collection- only polls values if they're past the frame length
+	 */
 	private boolean isLastFrameExpired() {
-		return System.currentTimeMillis() - m_lastFrame.getTime() > FRAME_LENGTH;
+		return System.currentTimeMillis() - m_lastFrame.getTime() > FRAME_LENGTH_MS;
 	}
-	
+
+	/**
+	 * @return The most recent relevant joystick values, and/or pulls new ones
+	 */
 	public JoystickFrame getRawFrame() {
 		if (isLastFrameExpired()) {
 			m_lastFrame = new JoystickFrame(this);
@@ -242,10 +320,20 @@ public final class Gemstick extends Joystick {
 		return m_lastFrame;
 	}
 
+	/**
+	 * {@link Gemstick#getRawFrame()} but with the pipeline applied
+	 * @return The filtered and modified frame
+	 */
 	public JoystickFrame getFrame() {
 		return m_pipeline.apply(getRawFrame());
 	}
 
+	/**
+	 * Allows one to apply a {@link StickLens} to a {@link JoystickFrame}
+	 * to get a specific property
+	 * @param lens The lens which will collect the entry from the frame
+	 * @return The specified property
+	 */
 	public double get(final StickLens lens) {
 		return lens.apply(getFrame());
 	}

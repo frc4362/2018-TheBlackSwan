@@ -1,9 +1,12 @@
 package frc.team4362.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.Hardware;
 import frc.team4362.util.IntakeWheelSet;
 
+/**
+ * Runs the {@link IntakeWheelSet}s for a specified amount of time
+ */
 @SuppressWarnings("WeakerAccess")
 public final class RunIntakes extends Command {
 	private final long m_duration;
@@ -11,13 +14,13 @@ public final class RunIntakes extends Command {
 
 	private long m_startTime;
 
+	/**
+	 * @param preset The preset speed to the run the {@link IntakeWheelSet}s for
+	 * @param duration The amount of ms to ensure the speed for
+	 */
 	public RunIntakes(final IntakeWheelSet.SpeedPreset preset, final long duration) {
 		m_preset = preset;
 		m_duration = duration;
-	}
-
-	public RunIntakes(final IntakeWheelSet.SpeedPreset preset) {
-		this(preset, 10000);
 	}
 
 	@Override

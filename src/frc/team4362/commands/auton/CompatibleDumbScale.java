@@ -6,6 +6,10 @@ import frc.team4362.subsystems.Lift;
 import frc.team4362.util.IntakeWheelSet;
 import frc.team4362.util.command.PowerUpCommandGroup;
 
+/**
+ * Auton to be run with a two cube for our side
+ * Made to potentially play with FRC2767
+ */
 public class CompatibleDumbScale extends PowerUpCommandGroup {
 	private final MegaAutonomous.Side m_side;
 
@@ -22,6 +26,8 @@ public class CompatibleDumbScale extends PowerUpCommandGroup {
 			addSequential(Navigate.to(0, 12, 0, 0.5, 1000));
 			addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING_BUT_FAST, 750));
 			addSequential(Navigate.to(0, -18, 0, 0.6,1000));
+		} else {
+			addSequential(new DriveAcrossLineAuton());
 		}
 	}
 }

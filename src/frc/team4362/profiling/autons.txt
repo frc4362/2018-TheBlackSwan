@@ -1,0 +1,25 @@
+    final Waypoint[] points1 = {
+            new Waypoint(0, 0, 0),
+            new Waypoint(170, 0, 0),
+            new Waypoint(240, 46, 0)
+    };
+
+    final Waypoint[] points2 = {
+            new Waypoint(0, 0, 0),
+            new Waypoint(40, 16, Pathfinder.d2r(-79))
+    };
+
+    final Waypoint[] points3 = {
+            new Waypoint(0, 0, 0),
+            new Waypoint(10, 0, 0)
+    };
+
+    final Waypoint[] points4 = {
+            new Waypoint(0, 0, 0),
+            new Waypoint(70, -10, Pathfinder.d2r(-38))
+    };
+
+    final Waypoint[] points5 = {
+            new Waypoint(0, 0, 0),
+            new Waypoint(18, 0, 0)
+    };

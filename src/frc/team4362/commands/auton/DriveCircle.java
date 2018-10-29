@@ -2,7 +2,7 @@ package frc.team4362.commands.auton;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.team4362.Constants;
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.Hardware;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class DriveCircle extends Command {
@@ -55,7 +55,7 @@ public abstract class DriveCircle extends Command {
 			right = 0;
 		}
 
-		Hardware.getInstance().getDriveTrain().driveAuton(
+		Hardware.getInstance().getDriveTrain().drive(
 				left * multiplier,
 				right * multiplier
 		);

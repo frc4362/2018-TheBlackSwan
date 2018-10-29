@@ -2,7 +2,7 @@ package frc.team4362.commands.auton;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.Hardware;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;

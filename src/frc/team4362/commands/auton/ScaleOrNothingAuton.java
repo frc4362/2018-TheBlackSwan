@@ -9,4 +9,13 @@ public class ScaleOrNothingAuton extends MegaAutonomous {
 	public void closeSwitchOnly() {
 		addSequential(Navigate.to(0, 130, 0, 0.9, 5000));
 	}
+
+	@Override
+	public void pickUpSecondCube() { }
+
+	@Override
+	public void putSecondCubeInSwitch() { }
+
+	@Override
+	public void putSecondCubeInScale() { }
 }

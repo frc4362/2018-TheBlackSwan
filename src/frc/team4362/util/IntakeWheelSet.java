@@ -3,8 +3,14 @@ package frc.team4362.util;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+/**
+ * Class to represent the stage 1 and stage 2 intakes
+ */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class IntakeWheelSet {
+public final class IntakeWheelSet {
+	/**
+	 * Provides set speeds that can be adjusted from one place and used anywhere
+	 */
 	public enum SpeedPreset {
 		NEUTRAL(0.0f),
 		INTAKING(0.8f), // used to be 0.5f
@@ -30,7 +36,7 @@ public class IntakeWheelSet {
 		m_talon2.configPeakOutputReverse(-1, 0);
 	}
 
-	public void set(final float speed) {
+	private void set(final float speed) {
 		m_talon1.set(ControlMode.PercentOutput, speed);
 		m_talon2.set(ControlMode.PercentOutput, -speed);
 	}

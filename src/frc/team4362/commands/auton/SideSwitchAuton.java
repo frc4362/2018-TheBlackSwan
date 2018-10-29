@@ -31,7 +31,7 @@ public final class SideSwitchAuton extends PowerUpCommandGroup {
 		if (getOurSwitchSide() == m_side.character) {
 			addSequential(Navigate.to(0, 0, 90 * m_side.multiplier, 0, 6000));
 			addSequential(Navigate.to(0, 20, 0, 0.5,1000));
-			addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING), 0.75);
+			addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING, 750));
 		}
 	}
 }

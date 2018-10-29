@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.team4362.commands.LiftPositionChange;
 import frc.team4362.commands.RunIntakes;
 import frc.team4362.commands.any.Wait;
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.Hardware;
 import frc.team4362.subsystems.Lift;
 import frc.team4362.util.IntakeWheelSet;
 import frc.team4362.util.command.PowerUpCommandGroup;
@@ -30,7 +30,7 @@ public class CorrectSwitchSideAuton extends PowerUpCommandGroup {
 		}
 
 		addSequential(new Wait(500));
-		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING_BUT_FAST), 1.5);
+		addSequential(new RunIntakes(IntakeWheelSet.SpeedPreset.OUTTAKING_BUT_FAST,1500));
 
 		addSequential(Navigate.to(0, -48, 0, -0.3, 5000));
 		addSequential(new LiftPositionChange(Lift.Position.BOTTOM, 0));
@@ -43,21 +43,5 @@ public class CorrectSwitchSideAuton extends PowerUpCommandGroup {
 				addParallel(Navigate.to(0, 20, 0, 0.4, 1500));
 			}
 		});
-
-//		addSequential(commandOf(() ->
-//			Hardware.getInstance().getLift().setLiftPreset(Lift.Position.BOTTOM)));
-//		addSequential(commandOf(() ->
-//			Hardware.getInstance().getLift().setLiftPreset(Lift.Position.BOTTOM)));
-//		addSequential(commandOf(() ->
-//			Hardware.getInstance().getLift().setLiftPreset(Lift.Position.BOTTOM)));
-//
-//		if (getOurSwitchSide() == 'R') {
-//			addSequential(Navigate.to(0, 0, -45, 2345, 3000));
-//		} else {
-//			addSequential(Navigate.to(0, 0, 45, 2345, 3000));
-//		}
-//
-//		addSequential(commandOf(() ->
-//			Hardware.getInstance().getLift().setLiftPreset(Lift.Position.BOTTOM)));
 	}
 }

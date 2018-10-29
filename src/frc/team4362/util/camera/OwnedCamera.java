@@ -3,6 +3,12 @@ package frc.team4362.util.camera;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 
+/**
+ * A class which retains a pointer to an instance of {@link UsbCamera}
+ * so that it cannot pass out of our ownership.
+ * Notably, this makes it easier to swap camera views during runtime.
+ */
+@SuppressWarnings("FieldCanBeLocal")
 public final class OwnedCamera {
 	private static int newId;
 	static {

@@ -2,18 +2,22 @@ package frc.team4362.commands;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.command.Command;
-import frc.team4362.OperatorInterface;
-import frc.team4362.hardwares.Hardware;
 import frc.team4362.subsystems.Lift;
 import frc.team4362.util.command.ToggleableCommand;
 
+/**
+ * Opens and closes the mouth based on the position of the lift
+ * Meant to be used for auton and teleop
+ */
 @SuppressWarnings("WeakerAccess")
 public class MouthListener extends ToggleableCommand {
 	protected final Lift m_lift;
 	protected final DoubleSolenoid m_mouth;
 
+	/**
+	 * @param lift The {@link Lift} to observe
+	 * @param mouth The solenoid to actuate based on {@link Lift} state
+	 */
 	public MouthListener(
 			final Lift lift,
 			final DoubleSolenoid mouth

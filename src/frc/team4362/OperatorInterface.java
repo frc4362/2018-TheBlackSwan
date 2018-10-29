@@ -1,18 +1,17 @@
 package frc.team4362;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.team4362.commands.MouthListener;
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.subsystems.Intakes;
 import frc.team4362.util.IntakeWheelSet;
 import frc.team4362.util.joy.Gembutton;
 import frc.team4362.util.joy.Gemstick;
 
 import java.util.Objects;
 
-@SuppressWarnings("unused")
-public class OperatorInterface {
+@SuppressWarnings({"unused", "WeakerAccess"})
+public final class OperatorInterface {
 	private static OperatorInterface INSTANCE = null;
 
 	public static OperatorInterface getInstance() {
@@ -23,63 +22,54 @@ public class OperatorInterface {
 		return INSTANCE;
 	}
 
+	/**
+	 * Binds controls to the controllers
+	 * @param leftStick Left driver joystick
+	 * @param rightStick Right driver joystick
+	 * @param controller Operator controller
+	 * @param mouthListener Mouth listener command
+	 */
 	public final void configureControls(
 			final Gemstick leftStick,
 			final Gemstick rightStick,
 			final XboxController controller,
 			final MouthListener mouthListener
 	) {
-		final Gembutton shiftUpButton = new Gembutton(leftStick, 1),
-				shiftDownButton = new Gembutton(rightStick, 1),
+		final Gembutton
+			shiftUpButton      = new Gembutton(leftStick, 1),
+			shiftDownButton    = new Gembutton(rightStick, 1),
+			intakeButton       = new Gembutton(controller, 1),
+			outtakeButton      = new Gembutton(controller, 4),
+			climbExtendButton  = new Gembutton(controller, 8),
+			climbRetractButton = new Gembutton(controller, 7),
+			mouthForcerButton  = new Gembutton(controller, 6);
 
-				intakeButton = new Gembutton(controller, 1),
-				outtakeButton = new Gembutton(controller, 4),
-//				openMouthButton = new Gembutton(controller, 9),
-
-				climbExtendButton = new Gembutton(controller, 8),
-				climbRetractButton = new Gembutton(controller, 7),
-
-				mouthForcerButton = new Gembutton(controller, 10),
-				lightButton = new Gembutton(controller,5),
-				pinchButton = new Gembutton(controller, 6);
-
+		// shift up and down
 		shiftUpButton.whenPressed(() ->
-		  	Hardware.getInstance().getShifter().set(DoubleSolenoid.Value.kForward));
+		    Hardware.getInstance().getShifter().set(DoubleSolenoid.Value.kForward));
 		shiftDownButton.whenPressed(() ->
 			Hardware.getInstance().getShifter().set(DoubleSolenoid.Value.kReverse));
 
+		final Intakes intakes = Hardware.getInstance().getIntakes();
+		// run the intakes in
 		intakeButton.whenPressed(() ->
-			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.INTAKING));
+			intakes.set(IntakeWheelSet.SpeedPreset.INTAKING));
 		intakeButton.whenReleased(() ->
-			Hardware.getInstance().getIntakes().set(IntakeWheelSet.SpeedPreset.NEUTRAL));
+			intakes.set(IntakeWheelSet.SpeedPreset.NEUTRAL));
 
+		// runs the intakes out, and provides a second speed
 		outtakeButton.whileHeldIfElse(
-				() -> controller.getStickButton(GenericHID.Hand.kLeft),
-				() -> Hardware.getInstance().getIntakes()
-							  .set(IntakeWheelSet.SpeedPreset.OUTTAKING_BUT_FAST),
-				() -> Hardware.getInstance().getIntakes()
-							  .set(IntakeWheelSet.SpeedPreset.OUTTAKING));
+			() -> controller.getRawButton(5),
+			() -> intakes.set(IntakeWheelSet.SpeedPreset.OUTTAKING_BUT_FAST),
+			() -> intakes.set(IntakeWheelSet.SpeedPreset.OUTTAKING));
 		outtakeButton.whenReleased(
-				() -> Hardware.getInstance().getIntakes()
-							  .set(IntakeWheelSet.SpeedPreset.NEUTRAL));
+			() -> intakes.set(IntakeWheelSet.SpeedPreset.NEUTRAL));
 
-//		openMouthButton.whenPressed(() ->
-//			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward));
-//		openMouthButton.whenReleased(() ->
-//			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kReverse));
-
+		// force the intakes closed
 		mouthForcerButton.whenPressed(() -> {
-			Hardware.getInstance().getIntakes().getMouth().set(DoubleSolenoid.Value.kForward);
+			intakes.getMouth().set(DoubleSolenoid.Value.kForward);
 			mouthListener.disable();
 		});
 		mouthForcerButton.whenReleased(mouthListener::enable);
-
-		lightButton.whenPressed(Hardware.getInstance().getLEDs()::turnOn);
-		lightButton.whenReleased(Hardware.getInstance().getLEDs()::turnOff);
-
-		pinchButton.whenPressed(() ->
-			Hardware.getInstance().getPincher().set(true));
-		pinchButton.whenReleased(() ->
-			Hardware.getInstance().getPincher().set(false));
 	}
 }

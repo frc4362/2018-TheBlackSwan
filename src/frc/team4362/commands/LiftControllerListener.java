@@ -7,6 +7,9 @@ import frc.team4362.subsystems.Lift;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
 
+/**
+ * Allows the lift to be manually scrubbed with a XboxController
+ */
 public final class LiftControllerListener extends Command {
 	private static final double
 			MAX_CHANGE_PER_SECOND = 0.25,
@@ -20,6 +23,9 @@ public final class LiftControllerListener extends Command {
 		m_controller = controller;
 	}
 
+	/**
+	 * Moves the lift setpoint just a bit based on the magnitude of the joystick
+	 */
 	@Override
 	public void execute() {
 		final double adjustmentRatio =

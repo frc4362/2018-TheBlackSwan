@@ -2,13 +2,19 @@ package frc.team4362.util.joy;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+/**
+ * Packages all possible {@link Gemstick} axis values in one frame
+ * with a few abstractions
+ */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class JoystickFrame {
-	private final double
-			m_x, m_y, m_z,
-			m_magnitude, m_azimuth;
+	private final double m_x, m_y, m_z, m_magnitude, m_azimuth;
 	private final long m_time;
 
+	/**
+	 * Provides the information about a {@link Gemstick} pose
+	 * from just the base coordinates
+	 */
 	public JoystickFrame(final double x, final double y, final double z) {
 		m_x = x;
 		m_y = y;
@@ -20,6 +26,9 @@ public final class JoystickFrame {
 		m_time = System.currentTimeMillis();
 	}
 
+	/**
+	 * @param stick The joystick from which you want to pull values
+	 */
 	public JoystickFrame(final Joystick stick) {
 		this(stick.getRawAxis(0), stick.getRawAxis(1), stick.getRawAxis(2));
 	}

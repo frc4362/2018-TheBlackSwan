@@ -1,6 +1,6 @@
 package frc.team4362.commands.auton;
 
-import frc.team4362.hardwares.Hardware;
+import frc.team4362.Hardware;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,6 +30,10 @@ public class TurnDegrees extends Command {
 
     public TurnDegrees(final double degrees) {
 		this(degrees, DEFAULT_DURATION);
+	}
+
+	public static TurnDegrees make(final double degrees) {
+		return new TurnDegrees(-degrees);
 	}
 
     private double getHeading() {

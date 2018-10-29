@@ -50,7 +50,7 @@ public class DriveDistanceRamp extends DriveDistanceCoast {
 					 speedCandidateRight = m_speedRight * signum(getRightError())
 					    * signum(m_speedRight) * rightMultiplier;
 
-		m_driveTrain.driveAuton(
+		m_driveTrain.drive(
 				ensureMinimumSpeed(speedCandidateLeft),
 				ensureMinimumSpeed(speedCandidateRight)
 		);
