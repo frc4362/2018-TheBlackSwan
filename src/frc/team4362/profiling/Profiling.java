@@ -1,7 +1,6 @@
 package frc.team4362.profiling;
 
-import frc.team4362.Constants;
-
+import frc.team4362.kinematics.Physics;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
@@ -19,7 +18,7 @@ public enum Profiling {
 			0.48714285714285716;
 
 	public static final double MAX_VELOCITY =
-			Constants.Physics.SPEED_LOW_GEAR * 1.0;
+			Physics.SPEED_LOW_GEAR * 1.0;
 
 	private static final double VELOCITY_RATIO =
 			1 / MAX_VELOCITY;
@@ -58,7 +57,7 @@ public enum Profiling {
 	public void generatePath(final String name, final Waypoint[] points) {
 		final Trajectory trajectory = Pathfinder.generate(points, DEFAULT_CONFIG);
 		final TankModifier tankTrajectories = new TankModifier(trajectory)
-			    .modify(Constants.Physics.DRIVE_TRAIN_WIDTH);
+			    .modify(Physics.DRIVE_TRAIN_WIDTH);
 		final Trajectory leftTraj = tankTrajectories.getLeftTrajectory(),
 				rightTraj = tankTrajectories.getRightTrajectory();
 

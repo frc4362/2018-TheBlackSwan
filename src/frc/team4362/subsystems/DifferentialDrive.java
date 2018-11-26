@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import frc.team4362.Constants;
 
 import static java.lang.Math.copySign;
 import static java.lang.Math.abs;
@@ -31,6 +32,7 @@ public final class DifferentialDrive implements Sendable {
 	// 21000nu / second = ~5.12 rotations / second
 	// ~307RPM = 5.47mph
 	public static final int TARGET_DRIVE_SPEED = 2100;
+	private static final double NATIVE_UNITS_TO_RPM = 0.18407769454627693;
 
 	private final List<WPI_TalonSRX> m_driveTalons;
 	private final WPI_TalonSRX
@@ -57,7 +59,7 @@ public final class DifferentialDrive implements Sendable {
 			"Back Right"
 	};
 
-	private double m_quickStopAccumulator;
+	private double m_stopAccum;
 
 	// deadband a val
 	private double limit(final double v) {
@@ -100,14 +102,10 @@ public final class DifferentialDrive implements Sendable {
 	 * @param enabled Turns nominal voltage on and off
 	 */
 	public void setNominalVoltage(final boolean enabled) {
+		final double percentOut = enabled ? kStaticFriction : 0;
 		m_driveTalons.forEach(device -> {
-			if (enabled) {
-				device.configNominalOutputForward(kStaticFriction, 0);
-				device.configNominalOutputReverse(-kStaticFriction, 0);
-			} else {
-				device.configNominalOutputForward(0, 0);
-				device.configNominalOutputReverse(0, 0);
-			}
+			device.configNominalOutputForward(percentOut, 0);
+			device.configNominalOutputReverse(-percentOut, 0);
 		});
 	}
 
@@ -143,25 +141,22 @@ public final class DifferentialDrive implements Sendable {
 			configureTalonVoltage(talon);
 			talon.setNeutralMode(NeutralMode.Brake);
 			talon.setSelectedSensorPosition(0, 0, 0);
+			talon.setSensorPhase(false);
 		});
 
 		m_talonLeftMaster = m_driveTalons.get(0);
 		m_talonLeftMaster.setInverted(false);
-		m_talonLeftMaster.setSensorPhase(false);
 		configureTalonFront(m_talonLeftMaster, DriveSide.LEFT_TELEOP);
 
 		m_talonLeftSlave = m_driveTalons.get(1);
 		m_talonLeftSlave.setInverted(false);
-		m_talonLeftSlave.setSensorPhase(false);
 
 		m_talonRightMaster = m_driveTalons.get(2);
 		m_talonRightMaster.setInverted(true);
-		m_talonRightMaster.setSensorPhase(false);
 		configureTalonFront(m_talonRightMaster, DriveSide.RIGHT_TELEOP);
 
 		m_talonRightSlave = m_driveTalons.get(3);
 		m_talonRightSlave.setInverted(true);
-		m_talonRightSlave.setSensorPhase(false);
 
 		setNominalVoltage(true);
 	}
@@ -180,6 +175,17 @@ public final class DifferentialDrive implements Sendable {
 
 		m_talonRightMaster.set(m_controlMode, speedRight * getTargetSpeed(DriveSide.RIGHT_TELEOP));
 		m_talonRightSlave.set(ControlMode.Follower, m_talonRightMaster.getDeviceID());
+	}
+
+	public void driveInches(final double inchesLeft, final double inchesRight) {
+		final double startPosLeft = m_talonLeftMaster.getSelectedSensorPosition(0),
+				startPosRight = m_talonRightMaster.getSelectedSensorPosition(0);
+
+		m_talonLeftMaster.set(ControlMode.Position, startPosLeft + inchesLeft * Constants.COUNTS_PER_INCH);
+		m_talonLeftSlave.set(ControlMode.Follower, m_talonLeftMaster.getDeviceID());
+
+		m_talonRightMaster.set(ControlMode.Position, startPosRight + inchesRight * Constants.COUNTS_PER_INCH);
+		m_talonRightSlave.set(ControlMode.Follower, m_talonLeftMaster.getDeviceID());
 	}
 
 	/**
@@ -201,21 +207,19 @@ public final class DifferentialDrive implements Sendable {
 	 * for better expressiveness and intuition
 	 * @param xSpeed Intended velocity of the robot
 	 * @param zRotation Angular power of the drive
-	 * @param quickTurnKind Quickturn setting
+	 * @param kind Quickturn setting
 	 */
 	public void driveCurvature(
 			final double xSpeed,
 			double zRotation,
-			final QuickTurnKind quickTurnKind
+			final QuickTurnKind kind
 	) {
 
 		double overPower, angularPower;
 
-		if (quickTurnKind != QuickTurnKind.OFF) {
+		if (kind != QuickTurnKind.OFF) {
 			if (Math.abs(xSpeed) < QUICKSTOP_THRESHOLD) {
-				final double alpha = quickTurnKind.alpha;
-				m_quickStopAccumulator =
-						(1 - alpha) * m_quickStopAccumulator + alpha * limit(zRotation) * 2;
+				m_stopAccum = (1 - kind.alpha) * m_stopAccum + kind.alpha * limit(zRotation) * 2;
 			}
 
 			overPower = 1.0;
@@ -223,14 +227,14 @@ public final class DifferentialDrive implements Sendable {
 		} else {
 			overPower = 0.0;
 			zRotation *= -Math.signum(xSpeed);
-			angularPower = Math.abs(xSpeed) * zRotation * kTurnSensitivity - m_quickStopAccumulator;
+			angularPower = Math.abs(xSpeed) * zRotation * kTurnSensitivity - m_stopAccum;
 
-			if (m_quickStopAccumulator > 1) {
-				m_quickStopAccumulator -= 1;
-			} else if (m_quickStopAccumulator < -1) {
-				m_quickStopAccumulator += 1;
+			if (m_stopAccum > 1) {
+				m_stopAccum -= 1;
+			} else if (m_stopAccum < -1) {
+				m_stopAccum += 1;
 			} else {
-				m_quickStopAccumulator = 0.0;
+				m_stopAccum = 0.0;
 			}
 		}
 
@@ -277,8 +281,7 @@ public final class DifferentialDrive implements Sendable {
 		}
 
 		final double maxOutput = copySign(max(abs(speed), abs(rotation)), speed);
-		final boolean
-				forward = speed >= 0.0,
+		final boolean forward = speed >= 0.0,
 				right = rotation >= 0.0;
 
 		final double speedLeft, speedRight;
@@ -336,6 +339,24 @@ public final class DifferentialDrive implements Sendable {
 		return m_driveTalons;
 	}
 
+	public double getInchesDrivenLeft() {
+		return m_talonLeftMaster.getSelectedSensorPosition(0) / Constants.COUNTS_PER_INCH;
+	}
+
+	public double getInchesDrivenRight() {
+		return m_talonRightMaster.getSelectedSensorPosition(0) / Constants.COUNTS_PER_INCH;
+	}
+
+	public double getInchesPerSecondLeft() {
+		final double baseSpeed = m_talonLeftMaster.getSelectedSensorVelocity(0);
+		return baseSpeed * NATIVE_UNITS_TO_RPM;
+	}
+
+	public double getInchesPerSecondRight() {
+		final double baseSpeed = m_talonRightMaster.getSelectedSensorVelocity(0);
+		return baseSpeed * NATIVE_UNITS_TO_RPM;
+	}
+
 	/**
 	 * Builds a real-time logging object to be given to the OutlineViewer
 	 * @param builder This is used internally by WPILib, don't worry about it
@@ -351,8 +372,8 @@ public final class DifferentialDrive implements Sendable {
 
 			final NetworkTableEntry
 					setSpeedEntry = builder.getEntry(name + " Set Speed"),
-					speedEntry = builder.getEntry(name + " Encoder Speed"),
-					errorEntry = builder.getEntry(name + " Closed-Loop Error"),
+					speedEntry    = builder.getEntry(name + " Encoder Speed"),
+					errorEntry    = builder.getEntry(name + " Closed-Loop Error"),
 					positionEntry = builder.getEntry(name + " Position");
 
 			builder.getEntry(name + " CAN ID").setString(id);

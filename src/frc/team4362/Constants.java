@@ -23,14 +23,4 @@ public final class Constants {
 			ROBOT_RADIUS_INCHES = ROBOT_WIDTH_INCHES / 2.0,
 			ROBOT_LENGTH_INCHES = 28; // used to be 11.5
 
-	/***
-	 * Everything in inches
-	 */
-	public static class Physics {
-		public static final double
-				DRIVE_TRAIN_WIDTH = 26.75,
-				ROBOT_LENGTH = 32.0,
-				SPEED_HIGH_GEAR = 252.0, // inches per second
-				SPEED_LOW_GEAR = 189.6; // inches per second
-	}
 }

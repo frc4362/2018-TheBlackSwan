@@ -12,6 +12,7 @@ import frc.team4362.commands.*;
 import frc.team4362.commands.auton.DriveAcrossLineAuton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import frc.team4362.kinematics.RobotState;
 import frc.team4362.subsystems.Lift;
 import frc.team4362.util.BetterTimedRobot;
 import frc.team4362.util.joy.DPadListener;
@@ -38,8 +39,7 @@ public final class Robot extends BetterTimedRobot {
 		super(true);
 		m_mouthListener = new MouthListener(
 			Hardware.getInstance().getLift(),
-			Hardware.getInstance().getIntakes().getMouth()
-		);
+			Hardware.getInstance().getIntakes().getMouth());
 	}
 
 	@Override
@@ -126,7 +126,11 @@ public final class Robot extends BetterTimedRobot {
 								new LiftPositionChange(Lift.Position.NEW_SCALE, 0));
 					}}),
 				m_mouthListener,
-				new ClimbListener(m_controller)
+				new ClimbListener(m_controller),
+				new RobotStateEstimator(
+						Hardware.getInstance().getDriveTrain(),
+						Hardware.getInstance().getMXP()::getAngle),
+				RobotState.getInstance().makeLogger()
 		);
 	}
 

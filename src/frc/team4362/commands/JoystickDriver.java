@@ -26,7 +26,8 @@ public final class JoystickDriver extends ToggleableCommand {
 		return modeChooser;
 	}
 
-	private final DriveItems m_driveItems;
+	private final DifferentialDrive m_driveBase;
+	private final Gemstick m_stickLeft, m_stickRight;
 
 	/**
 	 * Defines and implements several different drive modes
@@ -35,25 +36,22 @@ public final class JoystickDriver extends ToggleableCommand {
 		/**
 		 * Two-joystick drive, raw control from left -> left and right -> right
 		 */
-		TANK(items -> {
-			items.driveBase.drive(
-					items.stickLeft.get(Gemstick.StickLens.Y),
-					items.stickRight.get(Gemstick.StickLens.Y)
-			);
-		}),
+		TANK((driveBase, stickLeft, stickRight) ->
+			driveBase.drive(
+					stickLeft.get(Gemstick.StickLens.Y),
+					stickRight.get(Gemstick.StickLens.Y))),
 		/**
 		 * Maintains a consistent turning radius no matter the speed travelling,
 		 * by directing the angular power and velocity on separate sticks.
 		 * also provides a quickturn button which allows one to stop their momentum
 		 * and quickly turn.
 		 */
-		CURVATURE(items -> {
-			final double
-					throttle = items.stickLeft.get(Gemstick.StickLens.Y),
-					wheel = items.stickRight.get(Gemstick.StickLens.X);
+		CURVATURE((driveBase, stickLeft, stickRight) -> {
+			final double throttle = stickLeft.get(Gemstick.StickLens.Y),
+					wheel = stickRight.get(Gemstick.StickLens.X);
 
-			final boolean isQuickTurn = items.stickRight.getRawButton(2);
-			final boolean isSlowTurn = items.stickLeft.getRawButton(2);
+			final boolean isQuickTurn = stickRight.getRawButton(2),
+					isSlowTurn = stickLeft.getRawButton(2);
 
 			DifferentialDrive.QuickTurnKind kind;
 
@@ -65,22 +63,21 @@ public final class JoystickDriver extends ToggleableCommand {
 				kind = DifferentialDrive.QuickTurnKind.OFF;
 			}
 
-			items.driveBase.driveCurvature(throttle, wheel, kind);
+			driveBase.driveCurvature(throttle, wheel, kind);
 		}),
 		/**
 		 * One-stick expressive drive based on X and Y axis
 		 */
-		ARCADE(items -> {
-			final double
-					speed = items.stickRight.get(Gemstick.StickLens.Y),
-					rotation = items.stickRight.get(Gemstick.StickLens.X);
+		ARCADE((driveBase, stickLeft, stickRight) -> {
+			final double speed = stickRight.get(Gemstick.StickLens.Y),
+					rotation = stickRight.get(Gemstick.StickLens.X);
 
-			items.driveBase.driveArcade(speed, rotation, true);
+			driveBase.driveArcade(speed, rotation, true);
 		}),
 		/**
 		 * Drive mode which exists purely to charge air.
 		 */
-		AIRING(items -> {});
+		AIRING((driveBase, stickLeft, stickRight) -> {});
 
 		private final DriveConsumer m_action;
 
@@ -103,17 +100,15 @@ public final class JoystickDriver extends ToggleableCommand {
 			final Gemstick rightStick
 	) {
 		super(StartMode.ENABLED);
-		m_driveItems = new DriveItems(
-				driveBase,
-				leftStick,
-				rightStick
-		);
+		m_driveBase = driveBase;
+		m_stickLeft = leftStick;
+		m_stickRight = rightStick;
 	}
 
 	public void whenEnabled() {
 		modeChooser.getSelected()
 				.getAction()
-				.accept(m_driveItems);
+				.accept(m_driveBase, m_stickLeft, m_stickRight);
 	}
 
 	protected boolean isFinished() {

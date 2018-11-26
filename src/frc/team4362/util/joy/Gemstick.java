@@ -19,7 +19,8 @@ public final class Gemstick extends Joystick {
 
 	// frame length in ms, determines the update rate of the joysticks
 	// this might be wrong... uhHh
-	private static final int FRAME_LENGTH_MS = 50;
+	// EDIT: 11/7 it was def wrong
+	private static final int FRAME_LENGTH_MS = 20;
 
 	/**
 	 * Packages all values provided by the {@link Joystick} buttons in one frame

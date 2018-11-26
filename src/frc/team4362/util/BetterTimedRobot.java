@@ -11,8 +11,13 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team4362.Constants;
 import frc.team4362.commands.any.Wait;
+import frc.team4362.kinematics.Kinematics;
+import frc.team4362.kinematics.motion.Rotation;
+import frc.team4362.kinematics.motion.Twist;
 import frc.team4362.profiling.Profiling;
+import frc.team4362.subsystems.DifferentialDrive;
 import frc.team4362.util.command.Commands;
 import frc.team4362.util.command.DelayedAutonFactory;
 import frc.team4362.util.command.RuntimeCommandGroup;
@@ -72,6 +77,7 @@ public abstract class BetterTimedRobot extends TimedRobot {
 		resetAutonSelector();
 		getSendables().forEach(SmartDashboard::putData);
 		Profiling.INSTANCE.makeAutons();
+		final double forwardDist = Constants.COUNTS_PER_INCH * 12;
 	}
 
 	/**
